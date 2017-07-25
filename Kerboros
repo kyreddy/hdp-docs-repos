@@ -1,0 +1,104 @@
+2 Configuring Ambari and Hadoop for
+
+	2.1 Kerberos Overview
+		Security
+		authntication: who can come in: “identify”
+		authorisation: what can be done
+
+
+		Kerberos is a third party authentication mechanism involves for users and services :Kerberos server - to authenticate each to the other.
+		The Kerberos server itself is known as the Key Distribution Center, or KDC. At a high level,
+		it has three parts:
+		1. Principals : database of useers and services with their respective Kerberos passwords
+		2. An Authentication Server (AS) which performs the ""initial authentication"" and issues a Ticket Granting Ticket (TGT)
+		3. A Ticket Granting Server (TGS) that issues subsequent service tickets based on the initial TGT
+
+
+		The set of hosts, users, and services over which the Kerberos server has control is called a realm.
+	2.2 Kerberos Principals
+		principlae:A principal name in a given realm consists of a primary name and an instance name, in this case the instance
+			name is the FQDN of the host that runs that service
+		keytab file: As services do not log in with a password to acquire their tickets, their principal's authentication credentials are stored
+	2.3.4. (Optional) Install a new MIT KDC
+		Install the KDC Server
+			1. Install a new version of the KDC server:
+				yum install krb5-server krb5-libs krb5-workstation
+			2. Using a text editor, open the KDC server configuration file, located by default here:
+				vi /etc/krb5.conf
+			3. Change the [realms] section
+				default_realm = EXAMPLE.COM
+
+				[realms]
+				 EXAMPLE.COM = {
+				  kdc = master2 #<where kdc is installed>
+				  admin_server = master2 #<wherekdc server installed>
+				 }
+		 Note: it is very important to set  up the KDC server to auto-start on boot. For example:
+			RHEL/CentOS/Oracle Linux 6
+			chkconfig krb5kdc on
+			chkconfig kadmin on
+			RHEL/CentOS/Oracle Linux 7
+			systemctl enable krb5kdc
+			systemctl enable kadmin
+	4.	Create a Kerberos Admin
+		
+		1. Create a KDC admin by creating an admin principal.
+			kadmin.local -q "addprinc admin/admin"
+			Confirm that this admin principal has permissions in the KDC ACL. Using a text editor,
+			open the KDC ACL file:
+			RHEL/CentOS/Oracle Linux: to check if able to see content lie this */admin@HADOOP.COM * below file
+			vi /var/kerberos/krb5kdc/kadm5.acl
+	5. restart
+	
+		Installed:
+		  krb5-server.x86_64 0:1.14.1-27.el7_3                                                                                                                                                 
+
+		Complete!
+		[root@master2 ~]# vi /etc/krb5.conf
+		
+
+		 Create the Kerberos Database
+		 kdb5_util create -s	
+			entered master ky password "horton"
+		start kdc
+		[root@master2 ~]# systemctl start krb5kdc
+		[root@master2 ~]# systemctl start kadmin
+
+		Create a Kerberos Admin
+
+		Create a KDC admin by creating an admin principal
+
+		kadmin.local -q "addprinc admin/admin"
+		password "admin"
+
+
+
+		systemctl restart kadmin
+
+		testing::works from anywhere;;;; cd /usr/bin
+		/usr/bin/kadmin -s master2 -p admin/admin -r EXAMPLE.COM
+
+2.4. Enabling Kerberos Security
+
+		http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
+		downlaod and put in repos folder
+		
+		goto mount directory and execute below commandunzip
+		Run from all clustor hosts :run the following to extract the policy jars into the JDK installed on your host from repository folder
+		unzip -o -j -q jce_policy-8.zip -d /usr/jdk64/jdk1.8.0_77/jre/lib/security/
+
+
+
+		Confirm Configuration
+
+		Please review the configuration before continuing the setup process
+
+		Using the Download CSV button, you can download a csv file which contains a list of the principals and keytabs that will automatically be created by Ambari.
+
+		Executable path: /usr/bin, /usr/kerberos/bin, /usr/sbin, /usr/lib/mit/bin, /usr/lib/mit/sbin
+
+		KDC Hosts: master2
+
+		KDC Type: Existing MIT KDC
+
+		Realm Name: EXAMPLE.COM
