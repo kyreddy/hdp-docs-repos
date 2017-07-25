@@ -1,0 +1,748 @@
+#Operating System Information
+uname -a
+which rpm
+which gdebi
+cat /proc/version
+cat /proc/*release
+#installed versions
+rpm -qa | egrep "hadoop|yarn"
+#detect runnins processes
+ps -aux
+ps -ef |grep java
+ps -aef |grep nameode #capture the pid from here [for eg say it is 3490
+netstat taupen |grep <pid/3490>
+
+#running java process
+jps
+#Show Open Files Linked to a Process ID
+#lsof -p <pid> | grep <file string name>
+lsof -p 8857 | grep var
+#Detect Auto-start Processes
+#for user in $(cut -f1 -d: /etc/passwd); do crontab -u $user -l; done
+for user in $(cut -f1 -d: /etc/passwd); do crontab -u $user -l; done
+#Get a List of All Mounts on a Machine
+df
+#Operating System Log Files
+</var/log/messages>
+</var/log/audit/audit.log> Contains global system messages, including messages that are logged during system start-up
+#Listing PCI buses and devices in the system
+lspci
+cat /proc/cpuinfo
+#Network Information
+ifconfig
+netstat -an
+service iptables status
+
+#hadoop version
+hadoop version
+
+#running pijob 
+hadoop jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples-*.jar pi 10 10
+#getting running job list
+yarn application -list
+
+#getting hapoo queue list
+hadoop queue -listjps
+
+#acls for current user
+hadoop queue -showacls
+root@a2nn:~> hadoop queue -showacls
+#kill an application
+yarn application  -kill  <application_id>
+#kill a task
+hadoop job -kill-task <task-id>
+#fail a task
+hadoop job -fail-task <task-id>
+#list attempts
+hadoop job -list-attempt-ids <job-id> <task-type> <task-state>
+
+=====================================================================================================================================
+#to tune jvm arguments for ambari server
+/var/lib/ambari-server/ambari-env.sh
+#to list unique users and their processes count
+ps -eo user=|sort|uniq -c
+ps haeo user | sort | uniq -c | sort -nr
+
+#to see how many process runing for given user
+ps aux | awk '{ print $1 }' | sed '1 d' | sort | uniq
+
+
+
+
+#CentOS7 V2 new VM with 50 gb harddisk
+
+#Linux os user and password chosed during install
+osuser/horton
+
+#Customise Hardware added host only network adapter
+#cnaged date to est
+#changed screen lock off and notification off
+>Applications>Syetsm tools>settings
+
+## take backup of vm
+
+#update software around 198 updates as on 7/10/2017 
+>Applications>System Tools>SoftwareUpdates
+=============================
+centos 7
+http://isoredirect.centos.org/centos/7/isos/x86_64/CentOS-7-x86_64-Everything-1611.iso
+=============================
+
+##YUM yum The foundation of the Package Updater is the Yum package manager, developed by Duke University to improve the installation of RPMs.
+
+	#Updating Your System with yum
+	#Use the update option to upgrade all of your CentOS system software to the latest version with one operation.
+	#To perform a full system update, type this command:
+	#At the prompt, enter the root password.
+	su -c 'yum update'
+
+		3.3.1. yum Commands
+		yum commands are typically typed as the following:
+		yum command [package_name]
+		By default, Yum will automatically attempt to check all configured repositories to resolve all package dependencies during an installation or upgrade. The following is a list of the most commonly-used yum commands. For a complete list of available yum commands, refer to man yum.
+		yum install package_name
+		Used to install the latest version of a package or group of packages. If no package matches the specified package name(s), they are assumed to be a shell wildcard, and any matches are then installed.
+		yum update package_name
+		Used to update the specified packages to the latest available version. If no packages are specified, then yum will attempt to update all installed packages.
+		If the --obsoletes option is used (i.e. yum --obsoletes package_name), yum will process obsolete packages. As such, packages that are obsoleted across updates will be removed and replaced accordingly.
+		yum check-update
+		This command allows you to determine whether any updates are available for your installed packages. yum returns a list of all package updates from all repositories if any are available.
+		yum remove package_name
+		Used to remove specified packages, along with any other packages dependent on the packages being removed.
+		yum provides package_name
+		Used to determine which packages provide a specific file or feature.
+		yum search keyword
+		This command is used to find any packages containing the specified keyword in the description, summary, packager and package name fields of RPMs in all supported repositories.
+		yum localinstall absolute path to filename
+
+##take backup of vm takes 7 mnts to zip it
+
+## rename vm name to master2 in VM map to local drive adding shared path
+#login as root/horton
+
+Installation
+	Chapter 1. Getting Ready
+	 1. Determine Stack Compatibility
+		Ambari 2.4.2
+		HDP 2.4.3
+	2.1. Operating Systems Requirements
+		CentOS v7.x
+	2.2. Browser Requirements
+		Firefox 18
+	 2.3. Software Requirements
+		yum and rpm (RHEL/CentOS/Oracle Linux)
+	2.4. JDK Requirements
+		Oracle JDK 1.8 64-bit (minimum JDK 1.8_40) (default)
+	2.5. Database Requirements:: note Use of an existing Oracle 12c database is only supported with HDP 2.3 or later
+		Ambari :Ambari will install an instance of PostgreSQL (9.1.13 +) on the Ambari Server host
+		Hive : By default (on RHEL/CentOS/Oracle Linux 6), Ambari will install an instance of MySQL 5.6 on the Hive Metastore host. Otherwise,
+		Oozie : Ambari will install an instance of Derby on the Oozie Server host.
+		Ranger :pick what ever needed 
+		
+	2.6. Memory Requirements
+		Number of hosts Memory Available Disk Space
+		1				1024			10 GB
+		10				1024			20 GB
+#To check available memory on any host, run
+free -m
+	
+	2.7. Package Size and Inode Count Requirements
+
+						Size	Inodes
+		
+		Ambari Server	100MB	5,000			
+
+	2.8. Check the Maximum Open File Descriptors
+		
+ulimit -Sn
+ulimit -Hn
+		#If the output is not greater than 10000, run the following command to set it to a suitable default:
+ulimit -n 10000
+	
+	3. Collect Information
+		#You can use to check or verify the FQDN of a host
+hostname -f
+		
+		#The base directories you want to use as mount points for storing:
+			#NameNode data
+			#DataNodes data			
+			#Secondary NameNode data
+			#Oozie data
+			#YARN data
+			#ZooKeeper data, if you install ZooKeeper
+			#Various log, pid, and db files, depending on your install type
+
+
+	4. Prepare the Environment
+		4.1 Set up Password-less SSH
+			#to see recursive permission on folder 
+			ls -lta
+			#Generate public and private SSH keys on the Ambari Server host. Hit enter 3 times to take default values
+			ssh-keygen
+			#should see two files generated {id_rsa  id_rsa.pub}
+			
+			#Add the SSH Public Key to the authorized_keys file on your target hosts.
+			cat id_rsa.pub >> authorized_keys
+			#set permission to directorr and authorised_keys
+			chmod 700 ~/.ssh
+			chmod 600 ~/.ssh/authorized_keys
+			#From the Ambari Server, make sure you can connect to each host in the cluster using SSH, without having to enter a password.
+			ssh root@<remote.target.host> where <remote.target.host> has the value of each host name in your cluster.
+			
+			#If the following warning message displays during your first connection: Are you sure you want to continue connecting (yes/no)? Enter Yes.
+			#to copy from current host to another host
+			cat ~/.ssh/id_rsa.pub | ssh root@smaster "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys"
+				
+		4.2 Set up Service User Accounts
+			
+		4.3Enable NTP on the Cluster
+			#To check that the NTP service will be automatically started upon boot, run the following command on each host:
+			#RHEL/ CentOS /Oracle 6
+			chkconfig --list ntpd
+			#RHEL/ CentOS /Oracle 7
+			systemctl is-enabled ntpd
+			#To set the NTP service to auto-start on boot, run the following command on each host:
+			#RHEL/ CentOS /Oracle 6
+			chkconfig ntpd on
+			#RHEL/ CentOS /Oracle 7
+			systemctl enable ntpd
+			#To start the NTP service, run the following command on each host:
+			#RHEL/ CentOS /Oracle 6
+			service ntpd start			
+			#CentOS /Oracle 7
+			systemctl start ntpd
+
+		4.4 Check DNS
+			4.4.1Using a text editor, open the hosts file on every host in your cluster. For example:
+			vi /etc/hosts
+			160.162.164.100 master2
+			160.162.164.110 namenode2
+			160.162.164.120 snamenode2
+			160.162.164.130 yarnserver2
+			160.162.164.140 dnode10
+			160.162.164.150 dnode20
+			160.162.164.160 dnode30
+
+
+			#Use the "hostname" command to set the hostname on each host in your cluster. For example:
+			hostname <fully.qualified.domain.name>
+			hostname master2
+			4.4.3. Edit the Network Configuration File
+			vi /etc/sysconfig/network
+			cat /etc/sysconfig/network
+			# Created by anaconda
+			NETWORKING=yes
+			HOSTNAME=master2
+			NETWORKING_IPV6=no
+
+	
+		4.5Configure iptables
+			#RHEL/ CentOS /Oracle Linux 7
+			systemctl disable firewalld
+			service firewalld stop				
+		4.6Disable SELinux, PackageKit and Check umask Value
+			o permanently disable SELinux set "SELINUX=disabled" in 
+			vi /etc/selinux/config
+			vi /etc/profile  >append "umask 022" at the end
+			
+		#MISCELLENEOUS items
+		#append line in "net.ipv6.conf.all.disable_ipv6=1"
+		vi /etc/sysctl.conf
+				
+		edit etho file for entries as below
+			vi /etc/sysconfig/network-scripts/ifcfg-eth0
+			entries look like these::
+			DEVICE="eth0"
+			BOOTPROTO="dhcp"
+			IPV6INIT="no"
+			HWADDR="00:0C:29:FC:89:12"   <NAT ip address>
+			NM_CONTROLLED="yes"
+			ONBOOT="yes"
+			TYPE="Ethernet"
+		edit etho file for entries as below
+			vi /etc/sysconfig/network-scripts/ifcfg-eth1
+			entries should look like these::
+			DEVICE="eth1"
+			BOOTPROTO="static"
+			IPV6INIT="no"
+			HWADDR="00:50:56:34:1D:54"   <<HOST only ip address>>
+			NM_CONTROLLED="yes"
+			ONBOOT="yes"
+			TYPE="Ethernet"
+			IPADDR=194.170.100.10
+
+			=========================
+			set host name as required name
+	[root@localhost mymount]# hostnamectl set-hostname master
+	systemctl restart systemd-hostnamed   restart service
+			==========================
+		#remove rules files 
+		rm /etc/udev/rules.d/70-persistent-ipoib.rules
+		#install httpd if not present
+		sudo yum install httpd
+		#mount local drive and enter lan password when prompted
+		mount.cifs //DESKTOP-FE3ECT3/centos7repos /mnt/mymount -o user=ubif
+		
+		#go to http://mirror.centos.org/centos/7/extras/x86_64/Packages/    and  download epel-release-7-9.noarch.rpm     put it in desktop mount folder   go to mount folder
+		cd epel
+		rpm -ivh epel-release-7-9.noarch.rpm
+		
+		#check for epel release    should see result like    "epel-release-7-9.noarch"
+		rpm -qa | grep  epel-release
+
+##TAKE BACKUP OF VM. this point all prep os level complete
+		
+		
+		#restart vm and do following checks
+		ping master2
+		hostname -f
+		
+#each node changes
+hostnamectl set-hostname <master>
+vi /etc/sysconfig/network
+vi /etc/sysconfig/network-scripts/ifcfg-eth0
+vi /etc/sysconfig/network-scripts/ifcfg-eth1
+rm /etc/udev/rules.d/70-persistent-ipoib.rules
+rm: cannot remove ‘/etc/udev/rules.d/70-persistent-ipoib.rules’: No such file or directory
+[root@master2 ~]# hostname namenode2
+
+##TAKE full backup bkp
+
+Chapter 2. Installing Ambari C:\devtools\vm2\bkp_before ambari
+	#mopunt on master2  
+	mount.cifs //DESKTOP-FE3ECT3/centos7repos /mnt -o user=ubif
+	mkdir -p /data1/staging
+	chmod -R 755 /data1/staging
+	#cd /mnt  navigate to mount location
+	tar -xvzf ambari-2.4.2.0-centos7.tar.gz -C /data1/staging
+	chmod -R a+x /data1/staging
+	
+	#start httpd service
+	service httpd start
+	
+	#navigate to directories
+	cd /data1/staging/AMBARI-2.4.2.0
+	#execute sh script
+	./setup_repo.sh
+	
+	#verify link
+	http://master2/AMBARI-2.4.2.0/
+	
+	#install ambari server
+	yum install ambari-server
+	#execute ambari setup enter n for customisation enter 1 for jdk1.8 enter y for license agreement enter n advance configuration 
+	ambari-server setup
+	#start ambari server
+	ambari-server start
+	
+	#navigate to /mnt folder
+	cd /mnt
+	tar -xvzf HDP-2.4.3.0-centos7-rpm.tar.gz  -C /data1/staging
+	#create symbolic link make sure path exists  
+	ls /data1/staging/HDP/centos7/2.x/updates/2.4.3.0
+	ln -s /data1/staging/HDP/centos7/2.x/updates/2.4.3.0 /var/www/html/HDP
+	#execute from /mnt folder
+	tar -xvzf HDP-UTILS-1.1.0.20-centos7.tar.gz -C /data1/staging
+	#create symbolic link make sure path exists
+	ls /data1/staging/HDP-UTILS-1.1.0.20/repos/centos7 
+	ln -s /data1/staging/HDP-UTILS-1.1.0.20/repos/centos7 /var/www/html/HDP-UTILS
+	#execute from mount location make sure edit master server name 
+	cp hdp.repo /etc/yum.repos.d/
+	#stop and start ambari, ntpd, httpd services
+	service httpd stop
+	service ntpd stop
+	ambari-server stop
+	
+	service httpd start
+	service ntpd start
+	ambari-server start
+	
+	#check for urls repositories:   
+    http://<hostname>/HDP/    
+    http://<master>/HDP-UTILS/
+	
+	cluster installation
+	hdpv2
+	hdp2.4.3
+	local repository
+	http://master2/HDP
+	http://master2/HDP-UTILS
+	
+	
+	
+	options
+	Admin Name : admin
+
+Cluster Name : hdpv2
+
+Total Hosts : 6 (6 new)
+
+Repositories:
+
+    redhat7 (HDP-2.4):
+    http://master2/HDP
+
+    redhat7 (HDP-UTILS-1.1.0.20):
+    http://master2/HDP-UTILS
+
+Services:
+
+    HDFS
+        DataNode : 2 hosts
+        NameNode : namenode2
+        NFSGateway : 0 host
+        SNameNode : snamenode2
+    YARN + MapReduce2
+        App Timeline Server : snamenode2
+        NodeManager : 1 host
+        ResourceManager : yarnserver2
+    ZooKeeper
+        Server : 3 hosts
+    Ambari Metrics
+        Metrics Collector : snamenode2
+        Grafana : dnode10
+		
+		The cluster consists of 6 hosts
+
+    Installed and started services successfully on 6 new hosts
+
+Master services installed
+
+    NameNode installed on namenode2
+    SNameNode installed on snamenode2
+    ResourceManager installed on yarnserver2
+    History Server installed on snamenode2
+
+All services started
+
+All tests passed
+
+Install and start completed in 6 minutes and 32 seconds
+
+
+	
+#ACL
+
+userdel bruce
+userdel diana
+groupdel sales
+sudo -su hdfs hadoop fs  -rm -r /user/reports
+
+
+HDFS -> Configs -> Advanced -> Custom hdfs-site.xml and add a property
+dfs.namenode.acls.enabled=true
+
+restart and refresh and can check in master2 /etc/hadoop/conf/hdfs-site.xml
+
+cat /etc/passwd
+cat /etc/passwd
+
+groupadd groupname execs
+
+
+useradd bruce
+
+#add bruce user to sales group
+useradd -G sales  bruce
+
+#make dir and change owner to bruce user and sales owner
+
+sudo -u hdfs hadoop fs -mkdir /sales-data ; sudo -u hdfs hadoop fs -chown bruce:sales /sales-data
+
+sudo -u hdfs hadoop fs -ls 
+drwxr-xr-x   - bruce  sales           0 2017-07-10 23:35 /sales-data
+
+sudo -u hdfs hadoop fs -setfacl -m group:execs:r-- /user/reports/sales-data
+
+sudo -u hdfs hadoop fs   -setfacl -R -m user:diana:r-- /user/reports/sales-data
+sudo su - diana
+[diana@master2 ~]$ hadoop fs -cat /user/reports/sales-data
+
+
+
+
+
+
+sudo -u hdfs hadoop fs -mkdir 
+useradd 
+	
+	
+	
+	
+	
+
+
+daily
+#check if httpd is running
+service httpd status |start |stop
+
+ACL
+#check if acl enabled
+#Ambari>HDFS>condif>advanced>
+userdel 
+sudo -su hdfs hadoop fs  -rm -r /user/reports
+
+
+
+s -eo user=|sort|uniq -c
+
+install mysql cent os7
+
+[root@master2 ~]# mount.cifs //DESKTOP-FE3ECT3/centos7repos /mnt -o user=ubif
+Password for ubif@//DESKTOP-FE3ECT3/centos7repos:  ******
+[root@master2 ~]# cd /mnt
+#[root@master2 mnt]# wget http://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+[root@master2 mnt]# sudo rpm -Uvh mysql57-community-release-el7-11.noarch.rpm
+
+Enter y
+Total download size: 190 M
+Is this ok [y/d/N]: y
+Enter y
+From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-mysql
+Is this ok [y/N]: y
+
+
+Verify the repositories are installed:
+ls -1 /etc/yum.repos.d/mysql-community*
+
+
+sudo systemctl start mysqld
+sudo systemctl status mysqld
+
+Reset the MySql server root password.
+sudo grep 'temporary password' /var/log/mysqld.log
+
+Output Something like-:
+
+10.744785Z 1 [Note] A temporary password is generated for root@localhost: o!5y,oJGALQa
+
+sudo mysql_secure_installation
+option chosen:: Disallow root login remotely? (Press y|Y for Yes, any other key for No) : n
+
+
+enter temp password 
+
+root password  Horton$2
+
+ps -ef | grep mysql
+
+#login as root user 
+mysql -u root -p
+Enter password as above root password
+use mysql
+#redo set password for hostname after ranger or hive schema executed
+
+mysql> set password for 'root'@'<hostname>' = password('Horton$2');
+
+#installl part of ranger of hive server
+yum install mysql-connector-java*
+ambari-server setup --jdbc-db=mysql --jdbc-driver=/usr/share/java/mysql-connector-java.jar
+
+
+rangerdb password Rangeradmin$1
+
+mysql> GRANT ALL PRIVILEGES ON *.* to 'root'@'master2' identified by 'Horton$2' WITH GRANT OPTION;
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.01 sec)
+
+
+#login with node name`
+mysql -u root -p -hmaster2
+
+
+
+set password for 'root'@'master2' = password('pwd') after ranger meta data is complete
+----------------RANGER---------------
+mysql> SET GLOBAL sql_mode = '';
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> FLUSH PRIVILEGES
+    -> ;
+Query OK, 0 rows affected (0.00 sec)
+
+
+
+
+CREATE USER 'rangerdba'@'localhost' IDENTIFIED BY 'rangerdbA$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerdba'@'localhost';
+
+CREATE USER 'rangerdba'@'%' IDENTIFIED BY 'rangerdbA$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerdba'@'%';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerdba'@'localhost' WITH GRANT OPTION;
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerdba'@'%' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;
+
+CREATE USER 'rangerdba'@'master2' IDENTIFIED BY 'rangerdbA$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerdba'@'master2';
+
+CREATE USER 'rangerdba'@'%' IDENTIFIED BY 'rangerdbA$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerdba'@'%';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerdba'@'master2' WITH GRANT OPTION;
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerdba'@'%' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;
+
+grant all privileges on *.* to 'root'@'master2' identified by ''Horton$2';
+
+GRANT ALL PRIVILEGES ON ranger.* to 'root'@'master2'  ;
+
+ambari-server setup --jdbc-db=mysql --jdbc-driver=/usr/share/java/mysql-connector-java.jar
+
+
+
+
+
+------------ranger aufit-----
+CREATE USER 'rangerlogger'@'localhost' IDENTIFIED BY 'rangerloggeR$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerlogger'@'localhost';
+
+CREATE USER 'rangerlogger'@'%' IDENTIFIED BY 'rangerloggeR$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerlogger'@'%';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerlogger'@'localhost' WITH GRANT OPTION;
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerlogger'@'%' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;
+
+CREATE USER 'rangerlogger'@'master2' IDENTIFIED BY 'rangerloggeR$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerlogger'@'master2';
+
+CREATE USER 'rangerlogger'@'%' IDENTIFIED BY 'rangerloggeR$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerlogger'@'%';
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerlogger'@'master2' WITH GRANT OPTION;
+
+GRANT ALL PRIVILEGES ON *.* TO 'rangerlogger'@'%' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;
+
+
+
+
+
+
+----------------HIVE----------------
+CREATE USER 'hive'@'localhost' IDENTIFIED BY 'rangerloggeR$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'hive'@'localhost';
+
+CREATE USER 'hive'@'%' IDENTIFIED BY 'rangerloggeR$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'hive'@'%';
+
+GRANT ALL PRIVILEGES ON *.* TO 'hive'@'localhost' WITH GRANT OPTION;
+
+GRANT ALL PRIVILEGES ON *.* TO 'hive'@'%' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;
+
+CREATE USER 'hive'@'master2' IDENTIFIED BY 'rangerloggeR$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'hive'@'master2';
+
+CREATE USER 'hive'@'%' IDENTIFIED BY 'rangerloggeR$1';
+
+GRANT ALL PRIVILEGES ON *.* TO 'hive'@'%';
+
+GRANT ALL PRIVILEGES ON *.* TO 'hive'@'master2' WITH GRANT OPTION;
+
+GRANT ALL PRIVILEGES ON *.* TO 'hive'@'%' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;
+
+
+
+
+dev01, dev02, dev13
+qa01, qa02, qa05
+sales01, sales02, sales04
+promo01, promo02
+support01, support02, support09
+
+#run below with $root user
+
+sudo -su hdfs hadoop fs -mkdir /user/dev01;sudo -su hdfs hadoop fs -chown dev01:dev01 /user/dev01;
+sudo -su hdfs hadoop fs -mkdir /user/dev02;sudo -su hdfs hadoop fs -chown dev02:dev02 /user/dev02;
+sudo -su hdfs hadoop fs -mkdir /user/dev03;sudo -su hdfs hadoop fs -chown dev03:dev03 /user/dev03;
+groupadd dev
+useradd -G dev dev01 
+useradd -G dev dev02
+useradd -G dev dev03
+
+sudo -su hdfs hadoop fs -mkdir /user/qa01;sudo -su hdfs hadoop fs -chown qa01:qa01 /user/qa01;
+sudo -su hdfs hadoop fs -mkdir /user/qa02;sudo -su hdfs hadoop fs -chown qa02:qa02 /user/qa02;
+sudo -su hdfs hadoop fs -mkdir /user/qa03;sudo -su hdfs hadoop fs -chown qa03:qa03 /user/qa03;
+groupadd qa
+usermod -G qa qa01 
+usermod -G qa qa02
+useradd -G qa qa03
+sudo -su hdfs hadoop fs -mkdir /user/promo01;sudo -su hdfs hadoop fs -chown promo01:promo01 /user/promo01;
+sudo -su hdfs hadoop fs -mkdir /user/promo02;sudo -su hdfs hadoop fs -chown promo02:promo02 /user/promo02;
+sudo -su hdfs hadoop fs -mkdir /user/promo03;sudo -su hdfs hadoop fs -chown promo03:promo03 /user/promo03;
+groupadd promo
+useradd -G promo promo01 
+useradd -G promo promo02
+useradd -G promo promo03
+
+sudo -su hdfs hadoop fs -mkdir /user/sales01;sudo -su hdfs hadoop fs -chown sales01:sales01 /user/sales01;
+sudo -su hdfs hadoop fs -mkdir /user/sales02;sudo -su hdfs hadoop fs -chown sales02:sales02 /user/sales02;
+sudo -su hdfs hadoop fs -mkdir /user/sales03;sudo -su hdfs hadoop fs -chown sales03:sales03 /user/sales03;
+groupadd sales
+useradd -G sales sales01 
+useradd -G sales sales02
+useradd -G sales sales03
+
+sudo -su hdfs hadoop fs -mkdir /user/support01;sudo -su hdfs hadoop fs -chown support01:support01 /user/support01;
+sudo -su hdfs hadoop fs -mkdir /user/support02;sudo -su hdfs hadoop fs -chown support02:support02 /user/support02;
+sudo -su hdfs hadoop fs -mkdir /user/support03;sudo -su hdfs hadoop fs -chown support03:support03 /user/support03;
+groupadd support
+useradd -G support support01 
+useradd -G support support02
+useradd -G support support03
+
+u:support01:Support,u:support02:Support,u:support03:Support,g:promo:Marketing,g:sales:Marketing,g:dev:Dev,g:qa:QA
+
+Create a snapshot of an HDFS directory #HDFS Snapshots are read-only point-in-time copies of the file system. Snapshots can be taken on a subtree of the file system or the entire file system. Some common use cases of snapshots are data backup, protection against user errors and disaster recovery
+	#Snapshot Paths:::  Enabled an HDFS directory for snapshots allowSnapshot and then created, viewed, renamed and deleted a snapshot
+		sudo -su hdfs hadoop fs -mkdir  /user/cards; sudo -su hdfs hadoop fs -chmod 644 /user/cards
+		#CHECK IS ANY existing snapshot in ambari using HDFS>Summary>QuickLinks >namenode UI >snsapshot tab
+		$hdfs lsSnapshottableDir #lists for that user currently logged to check differenrt user make sure sudo -su username and reexecure command
+		sudo -su hdfs hadoop dfsadmin -allowSnapshot /user/cards   <>-disallowSnapshot
+		hdfs isSnapshottableDir
+		sudo -su hdfs hadoop fs -createSnapshot /user/cards mysnap  <>deleteSnapshot
+		sudo -su hdfs hadoop fs -ls /user/cards/.snapshot
+		hadoop fs -put run.sh /user/cards
+		
+		hdfs  -snapshotDiff /user/cards .snapshot/mysnap .snapshot/mysnap1
+		
+		recover snapshot
+		sudo -su hdfs hadoop fs -rm /user/cards/credits/run.sh
+		hadoop fs -ls /user/cards/.snapshot/mysnap1/credits/run.sh
+		
+		sudo -su hdfs  hadoop fs -cp /user/cards/.snapshot/mysnap1/credits/run.sh /user/cards/credits/run.sh
+		sudo -su hdfs  hadoop fs -ls /user/cards/credits/run.sh
+		sudo -su hdfs  hadoop fs -cat /user/cards/credits/run.sh
+		
+		hdfs dfs -cp -ptopax /foo/.snapshot/s0/bar /tmp     #cp: Access time for hdfs is not configured.  Please set dfs.namenode.accesstime.precision configuration parameter.
+		>Ambari>HDFS>config>filter for dfs.namenode.accesstime.precision 
+		sudo -su hdfs  hadoop fs -cp -ptopax /user/cards/.snapshot/mysnap1/credits/run.sh /user/cards/credits/run.sh
+		
+		sudo -su hdfs hadoop fs -deleteSnapshot /user/cards mysnap
+		sudo -su hdfs hadoop fs -deleteSnapshot /user/cards mysnap1
+		sudo -su hdfs hadoop dfsadmin -disallowSnapshot /user/cards
