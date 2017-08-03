@@ -1,0 +1,11 @@
+number of hours items
+1.  , ldap install and create users and test out in independant nodes
+2. active directory install and create users and test out in independant nodes
+3. test connecting from windows AD user and be able to authenticate using telnet client
+4. enable ambari AD 
+5. create users and hook to ldap and users be able to submit jobs
+6. create ambari non-root user
+7. each echo system create and proviion for development
+8 automated snapshot schedule cron jobs
+9 create project and execute project
+
